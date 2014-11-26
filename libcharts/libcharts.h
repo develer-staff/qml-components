@@ -51,8 +51,8 @@ private:
 class LineSeries : public QObject {
     Q_OBJECT
     Q_PROPERTY(QList<qreal> dataSource MEMBER data_source NOTIFY dataSourceChanged)
-	Q_PROPERTY(qreal scaleMaximum MEMBER scale_maximum NOTIFY scaleMaximumChanged)
-	Q_PROPERTY(qreal scaleMinimum MEMBER scale_minimum NOTIFY scaleMinimumChanged)
+    Q_PROPERTY(qreal scaleMaximum MEMBER scale_maximum NOTIFY scaleMaximumChanged)
+    Q_PROPERTY(qreal scaleMinimum MEMBER scale_minimum NOTIFY scaleMinimumChanged)
 
 public:
     LineSeries(QObject *parent = 0);
@@ -61,8 +61,8 @@ public:
 signals:
     void graphModelChanged(QList<qreal> val);
     void dataSourceChanged(QList<qreal> val);
-	void scaleMaximumChanged(qreal);
-	void scaleMinimumChanged(qreal);
+    void scaleMaximumChanged(qreal);
+    void scaleMinimumChanged(qreal);
 
 private slots:
     void updateGraphModel();
