@@ -26,13 +26,13 @@ ApplicationWindow {
         id: scaleTop
         anchors.top: background.top
         anchors.right: background.left
-        text: chart.model.scaleMaximum
+        text: chart.model[0].scaleMaximum
     }
     Text {
         id: scaleBottom
         anchors.baseline: background.bottom
         anchors.right: background.left
-        text: chart.model.scaleMinimum
+        text: chart.model[0].scaleMinimum
     }
 
     Rectangle {
@@ -55,14 +55,14 @@ ApplicationWindow {
 
     Button {
         onClicked: {
-            if (chart.model === series) {
-                chart.model = series2
+            if (chart.model[0] === series) {
+                chart.model = [series2]
                 chart.color = "green"
                 chart.lineWidth = 20
             }
             else {
                 chart.color = "red"
-                chart.model = series
+                chart.model = [series]
                 chart.lineWidth = 1
             }
         }

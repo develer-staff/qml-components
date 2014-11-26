@@ -74,26 +74,45 @@ QSGNode *Graph::updatePaintNode(QSGNode *old, UpdatePaintNodeData *update) {
 
 LineChart::LineChart(QQuickItem *parent) : Graph(parent)
 {
-    model = 0;
     line_width = 1;
     color = Qt::black;
     connect(this, SIGNAL(colorChanged()), SLOT(update()));
     connect(this, SIGNAL(lineWidthChanged()), SLOT(update()));
 }
 
-LineSeries *LineChart::getModel() const
+QVariantList LineChart::getModel() const
 {
-    return model;
+    QVariantList ret;
+    for (LineSeries *m : model)
+    {
+        QVariant v;
+        v.setValue(m);
+        ret << v;
+    }
+    return ret;
 }
 
-void LineChart::setModel(LineSeries *val)
+void LineChart::setModel(QVariantList val)
 {
-    if (val != model)
+    QList<LineSeries *> series;
+    for (const auto &v : val)
     {
-        if (model)
-            model->disconnect(this);
-        model = val;
-        connect(model, SIGNAL(graphModelChanged(QList<qreal>)), SLOT(update()));
+        if (!v.canConvert<LineSeries*>())
+        {
+            qWarning("Can't convert to LineSeries");
+            return;
+        }
+        else
+            series << v.value<LineSeries*>();
+    }
+
+    if (series != model)
+    {
+        for (const LineSeries *s : model)
+            s->disconnect(this);
+        model = series;
+        for (const LineSeries *s : model)
+            connect(s, SIGNAL(graphModelChanged(QList<qreal>)), SLOT(update()));
         emit modelChanged();
         update();
     }
@@ -101,7 +120,10 @@ void LineChart::setModel(LineSeries *val)
 
 quint32 LineChart::bufferSize()
 {
-    return (model->graphModel().size() - 1) * 2;
+    auto size = 0;
+    for (const LineSeries *s : model)
+        size += (s->graphModel().size() - 1) * 2;
+    return size;
 }
 
 void LineChart::drawGeometry(QSGGeometry *geometry)
@@ -109,7 +131,12 @@ void LineChart::drawGeometry(QSGGeometry *geometry)
     geometry->setDrawingMode(GL_LINES);
     geometry->setLineWidth(line_width);
     auto points = geometry->vertexDataAsColoredPoint2D();
-    drawPointsInLines(model->graphModel(), points, width() / (model->graphModel().size() - 1), color);
+    auto offset = 0;
+    for (const LineSeries *s : model)
+    {
+        drawPointsInLines(s->graphModel(), points, width() / (s->graphModel().size() - 1), color, offset);
+        offset += (s->graphModel().size() - 1) * 2;
+    }
 }
 
 

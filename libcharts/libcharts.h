@@ -25,14 +25,14 @@ private:
 
 class LineChart : public Graph {
     Q_OBJECT
-    Q_PROPERTY(LineSeries *model READ getModel WRITE setModel NOTIFY modelChanged)
+    Q_PROPERTY(QVariantList model READ getModel WRITE setModel NOTIFY modelChanged)
     Q_PROPERTY(QColor color MEMBER color NOTIFY colorChanged)
     Q_PROPERTY(qreal lineWidth MEMBER line_width NOTIFY lineWidthChanged)
 
 public:
     LineChart(QQuickItem *parent = 0);
-    LineSeries *getModel() const;
-    void setModel(LineSeries *val);
+    QVariantList getModel() const;
+    void setModel(QVariantList val);
 
 signals:
     void modelChanged();
@@ -42,7 +42,7 @@ signals:
 private:
     virtual quint32 bufferSize() override;
     virtual void drawGeometry(QSGGeometry *geometry) override;
-    LineSeries *model;
+    QList<LineSeries *> model;
     QColor color;
     qreal line_width;
 };
@@ -71,6 +71,8 @@ private:
     QList<qreal> data_source, graph_model;
     qreal scale_maximum, scale_minimum;
 };
+
+Q_DECLARE_METATYPE(LineSeries *)
 
 #endif // LIBCHARTS_H
 
