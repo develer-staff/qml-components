@@ -13,6 +13,7 @@ ApplicationWindow {
     LineSeries {
         id: series
         dataSource: anArray
+        color: "red"
     }
 
     LineSeries {
@@ -20,6 +21,7 @@ ApplicationWindow {
         dataSource: [100, 22, 80.3, 17, 61, 12, 18, -6]
         scaleMinimum: -10
         scaleMaximum: 200
+        color: "green"
     }
 
     Text {
@@ -48,8 +50,7 @@ ApplicationWindow {
         width: 200
         height: 200
         anchors.centerIn: parent
-        model: series
-        color: "red"
+        model: [series]
         lineWidth: 2
     }
 
@@ -57,11 +58,9 @@ ApplicationWindow {
         onClicked: {
             if (chart.model[0] === series) {
                 chart.model = [series2]
-                chart.color = "green"
                 chart.lineWidth = 20
             }
             else {
-                chart.color = "red"
                 chart.model = [series]
                 chart.lineWidth = 1
             }

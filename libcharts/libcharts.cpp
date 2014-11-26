@@ -75,8 +75,6 @@ QSGNode *Graph::updatePaintNode(QSGNode *old, UpdatePaintNodeData *update) {
 LineChart::LineChart(QQuickItem *parent) : Graph(parent)
 {
     line_width = 1;
-    color = Qt::black;
-    connect(this, SIGNAL(colorChanged()), SLOT(update()));
     connect(this, SIGNAL(lineWidthChanged()), SLOT(update()));
 }
 
@@ -112,7 +110,10 @@ void LineChart::setModel(QVariantList val)
             s->disconnect(this);
         model = series;
         for (const LineSeries *s : model)
+        {
+            connect(s, SIGNAL(colorChanged()), SLOT(update()));
             connect(s, SIGNAL(graphModelChanged(QList<qreal>)), SLOT(update()));
+        }
         emit modelChanged();
         update();
     }
@@ -134,7 +135,7 @@ void LineChart::drawGeometry(QSGGeometry *geometry)
     auto offset = 0;
     for (const LineSeries *s : model)
     {
-        drawPointsInLines(s->graphModel(), points, width() / (s->graphModel().size() - 1), color, offset);
+        drawPointsInLines(s->graphModel(), points, width() / (s->graphModel().size() - 1), s->getColor(), offset);
         offset += (s->graphModel().size() - 1) * 2;
     }
 }
@@ -144,12 +145,18 @@ LineSeries::LineSeries(QObject *parent) : QObject(parent)
 {
     scale_minimum = 0;
     scale_maximum = 100;
+    color = Qt::black;
     connect(this, SIGNAL(dataSourceChanged(QList<qreal>)), SLOT(updateGraphModel()));
 }
 
 QList<qreal> LineSeries::graphModel() const
 {
     return graph_model;
+}
+
+QColor LineSeries::getColor() const
+{
+    return color;
 }
 
 void LineSeries::updateGraphModel()
