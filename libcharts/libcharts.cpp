@@ -30,7 +30,7 @@ quint32 Graph::drawPointsInLines(QList<qreal> points, QSGGeometry::ColoredPoint2
         float x = (x_offset + w) * point_size;
         float y = h - (points.at(0) * h);
         target[i++].set(x, y, r, g, b, a);
-        target[i++].set(x, y, r, g, b, a);
+        target[i++].set(point_size, y, r, g, b, a);
         j += 2;
     }
     else
