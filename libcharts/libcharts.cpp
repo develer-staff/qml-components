@@ -123,7 +123,10 @@ quint32 LineChart::bufferSize()
 {
     auto size = 0;
     for (const LineSeries *s : model)
-        size += (s->graphModel().size() - 1) * 2;
+    {
+        int model_size = s->graphModel().size();
+        size += model_size == 0 ? 0 : qMax((model_size - 1) * 2, 2);
+    }
     return size;
 }
 
@@ -135,8 +138,12 @@ void LineChart::drawGeometry(QSGGeometry *geometry)
     auto offset = 0;
     for (const LineSeries *s : model)
     {
-        drawPointsInLines(s->graphModel(), points, width() / (s->graphModel().size() - 1), s->getColor(), offset);
-        offset += (s->graphModel().size() - 1) * 2;
+        int model_size = s->graphModel().size();
+        if (model_size != 0)
+        {
+            drawPointsInLines(s->graphModel(), points, width() / qMax(model_size - 1, 1), s->getColor(), offset);
+            offset += qMax((model_size - 1) * 2, 2);
+        }
     }
 }
 
